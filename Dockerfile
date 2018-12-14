@@ -3,7 +3,7 @@ FROM mdabioinfo/sos-notebook
 RUN echo WAIT
 
 
-# USER root
+USER root
 
 
 
@@ -21,7 +21,7 @@ RUN mkdir /opt/julia-${JULIA_VERSION} && \
     rm /tmp/julia-${JULIA_VERSION}-linux-x86_64.tar.gz
 RUN ln -fs /opt/julia-*/bin/julia /usr/local/bin/julia
 
-# Show Julia where conda libraries are \
+# Show Julia where conda libraries are
 RUN mkdir /etc/julia && \
     echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/juliarc.jl && \
     # Create JULIA_PKGDIR \
