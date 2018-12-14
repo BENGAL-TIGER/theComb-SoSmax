@@ -30,6 +30,7 @@ mkdir $HOME/notebooks
 
 cd $HOME/notebooks
 
+echo whew
 echo WAITING 1m FOR YOU TO COPY THE STUFF
 echo WAITING 1m FOR YOU TO COPY THE STUFF
 echo WAITING 1m FOR YOU TO COPY THE STUFF
