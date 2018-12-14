@@ -3,7 +3,7 @@ FROM mdabioinfo/sos-notebook
 RUN echo WAIT
 
 
-USER root
+# USER root
 
 
 
@@ -29,4 +29,4 @@ RUN mkdir /etc/julia && \
     chown $NB_USER $JULIA_PKGDIR && \
     fix-permissions $JULIA_PKGDIR
 
-USER $NB_UID
+# USER $NB_UID
