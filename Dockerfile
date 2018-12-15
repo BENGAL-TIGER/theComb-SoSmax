@@ -61,9 +61,15 @@ RUN     julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
        # julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")' \
        # move kernelspec out of home \
         mv $HOME/.local/share/jupyter/kernels/julia-1* $CONDA_DIR/share/jupyter/kernels/ && \
-        chmod -R go+rx $CONDA_DIR/share/jupyter && \
-        rm -rf $HOME/.local && \
-        fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
+        chmod -R go+rx $CONDA_DIR/share/jupyter
+
+USER    root
+
+RUN     rm -rf $HOME/.local
+
+USER    $NB_UID
+
+RUN     fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
 
 
 RUN     cd ~/work
