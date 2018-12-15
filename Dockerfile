@@ -50,22 +50,23 @@ USER    $NB_UID
 # Install IJulia as jovyan and then move the kernelspec out
 # to the system share location. Avoids problems with runtime UID change not
 # taking effect properly on the .local folder in the jovyan home dir.
-RUN       julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()' && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Feather"); Pkg.add("DataFrames")' && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("NamedArrays"); Pkg.add("RDatasets")' && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Unitful")'
 
-    # (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
-    # julia -e 'import Pkg; Pkg.add("Gadfly")' && \
-    # julia -e 'import Pkg; Pkg.add("RDatasets")' && \
-    # julia -e 'import Pkg; Pkg.add("IJulia")' && \
+
+RUN       julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
+          # julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("HDF5")'  && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Feather")'  && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("DataFrames")'  && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("NamedArrays")'  && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("RDatasets")'  && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Unitful")'  && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("IJulia")'  && \
 
          # Precompile Julia packages \
-RUN       julia-${JULIA_VERSION_1} -e 'Pkg.add("IJulia"); using IJulia'
-# RUN       julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")'
+          julia-${JULIA_VERSION_1} -e 'Pkg.add("IJulia"); using IJulia' && \
+# RUN       julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")' \
 
          # move kernelspec out of home \
-RUN       mv $HOME/.local/share/jupyter/kernels/julia* $CONDA_DIR/share/jupyter/kernels/ && \
+          mv $HOME/.local/share/jupyter/kernels/julia* $CONDA_DIR/share/jupyter/kernels/ && \
           chmod -R go+rx $CONDA_DIR/share/jupyter && \
           rm -rf $HOME/.local && \
           fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
