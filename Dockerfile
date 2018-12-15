@@ -50,9 +50,10 @@ USER    $NB_UID
 # Install IJulia as jovyan and then move the kernelspec out
 # to the system share location. Avoids problems with runtime UID change not
 # taking effect properly on the .local folder in the jovyan home dir.
-RUN       julia-${JULIA_VERSION_1} -e 'using Pkg; Pkg.add("Feather"); Pkg.add("DataFrames")' && \
-          julia-${JULIA_VERSION_1} -e 'Pkg.add("NamedArrays"); Pkg.add("RDatasets")' && \
-          julia-${JULIA_VERSION_1} -e 'Pkg.add("Unitful"); Pkg.update()'
+RUN       julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()' && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Feather"); Pkg.add("DataFrames")' && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("NamedArrays"); Pkg.add("RDatasets")' && \
+          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Unitful")'
 
     # (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
     # julia -e 'import Pkg; Pkg.add("Gadfly")' && \
