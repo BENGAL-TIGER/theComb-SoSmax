@@ -55,3 +55,6 @@ RUN     julia-${JULIA_VERSION_1} -e 'Pkg.init(); Pkg.update()' && \
         chmod -R go+rx $CONDA_DIR/share/jupyter && \
         rm -rf $HOME/.local && \
         fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
+
+
+RUN     cd ~/work
