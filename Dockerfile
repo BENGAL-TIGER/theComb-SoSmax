@@ -26,10 +26,10 @@ RUN \
 RUN ln -fs /opt/julia-${JULIA_VERSION_1}/bin/julia /usr/local/bin/julia-${JULIA_VERSION_1}
 
     # Show Julia where conda libraries are \
-RUN mkdir /etc/julia && \
-    echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/juliarc.jl && \
+# RUN mkdir /etc/julia && \
+RUN    echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/juliarc.jl && \
     # Create JULIA_PKGDIR \
-    mkdir $JULIA_PKGDIR && \
+    # mkdir $JULIA_PKGDIR && \
     chown $NB_USER $JULIA_PKGDIR && \
     fix-permissions $JULIA_PKGDIR
 
