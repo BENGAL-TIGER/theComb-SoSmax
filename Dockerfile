@@ -15,7 +15,7 @@ USER root
 ENV JULIA_PKGDIR=/opt/julia
 ENV JULIA_VERSION_1=0.6.4
 
-RUN  && \
+RUN \
     mkdir /opt/julia-${JULIA_VERSION_1} && \
     cd /tmp && \
     wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION_1} | cut -d. -f 1,2`/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz && \
