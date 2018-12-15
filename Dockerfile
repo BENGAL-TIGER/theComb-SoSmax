@@ -63,9 +63,9 @@ RUN     julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
         mv $HOME/.local/share/jupyter/kernels/julia-1* $CONDA_DIR/share/jupyter/kernels/ && \
         chmod -R go+rx $CONDA_DIR/share/jupyter
 
-USER    root
-
-RUN     rm -rf $HOME/.local
+# USER    root
+#
+# RUN     rm -rf $HOME/.local
 
 USER    $NB_UID
 
