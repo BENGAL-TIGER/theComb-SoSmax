@@ -40,9 +40,6 @@ RUN     echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/julia
 
 USER    $NB_UID
 
-
-
-
 # Add Julia packages. Only add HDF5 if this is not a test-only build since
 # it takes roughly half the entire build time of all of the images on Travis
 # to add this one package and often causes Travis to timeout.
@@ -51,25 +48,22 @@ USER    $NB_UID
 # to the system share location. Avoids problems with runtime UID change not
 # taking effect properly on the .local folder in the jovyan home dir.
 
-
-RUN       julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
-          # julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("HDF5")'  && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Feather")'  && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("DataFrames")'  && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("NamedArrays")'  && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("RDatasets")'  && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Unitful")'  && \
-          julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("IJulia")'  && \
-
-         # Precompile Julia packages \
-          julia-${JULIA_VERSION_1} -e 'using IJulia' && \
-# RUN       julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")' \
-
-         # move kernelspec out of home \
-          mv $HOME/.local/share/jupyter/kernels/julia* $CONDA_DIR/share/jupyter/kernels/ && \
-          chmod -R go+rx $CONDA_DIR/share/jupyter && \
-          rm -rf $HOME/.local && \
-          fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
+RUN     julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
+       # julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("HDF5")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Feather")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("DataFrames")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("NamedArrays")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("RDatasets")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Unitful")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("IJulia")'  && \
+       # Precompile Julia packages \
+        julia-${JULIA_VERSION_1} -e 'using IJulia' && \
+       # julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")' \
+       # move kernelspec out of home \
+        mv $HOME/.local/share/jupyter/kernels/julia-1* $CONDA_DIR/share/jupyter/kernels/ && \
+        chmod -R go+rx $CONDA_DIR/share/jupyter && \
+        rm -rf $HOME/.local && \
+        fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
 
 
 RUN     cd ~/work
