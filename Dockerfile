@@ -4,7 +4,7 @@ FROM    mdabioinfo/sos-notebook
 
 LABEL   maintainer="mdAshford"
 
-USER    $NB_USER
+USER    root
 
 
 # Julia dependencies
@@ -33,7 +33,7 @@ RUN     mkdir /etc/julia && \
         chown $NB_USER $JULIA_PKGDIR && \
         fix-permissions $JULIA_PKGDIR
 
-
+USER    $NB_UID
 
 # Add Julia packages. Only add HDF5 if this is not a test-only build since
 # it takes roughly half the entire build time of all of the images on Travis
