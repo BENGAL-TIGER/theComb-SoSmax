@@ -62,7 +62,7 @@ RUN       julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
           julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("IJulia")'  && \
 
          # Precompile Julia packages \
-          julia-${JULIA_VERSION_1} -e 'Pkg.add("IJulia"); using IJulia' && \
+          julia-${JULIA_VERSION_1} -e 'using IJulia' && \
 # RUN       julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")' \
 
          # move kernelspec out of home \
