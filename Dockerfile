@@ -1,39 +1,47 @@
 # ψᵟ
 #
-FROM mdabioinfo/sos-notebook
+FROM    mdabioinfo/sos-notebook
 
-LABEL maintainer="mdAshford"
+LABEL   maintainer="mdAshford"
 
-USER root
+USER    root
 
+ENV     JULIA_VERSION_0=$JULIA_VERSION
+
+       # Build CoolProp
+RUN     /opt/julia-0.6.2/bin/julia -e 'Pkg.init(); Pkg.clone("https://github.com/vimalaad/CoolProp.jl.git"); Pkg.build("CoolProp"); Pkg.update()'
 
 # Julia dependencies
 # install Julia packages in /opt/julia instead of $HOME
-# install julia-0.6.4
+# install julia-1.0.2
 # ENV JULIA_DEPOT_PATH=/opt/julia
 
-ENV JULIA_PKGDIR=/opt/julia
-ENV JULIA_VERSION_1=0.6.4
+# ENV JULIA_PKGDIR=/opt/julia
 
-RUN \
-    mkdir /opt/julia-${JULIA_VERSION_1} && \
-    cd /tmp && \
-    wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION_1} | cut -d. -f 1,2`/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz && \
-    echo "d20e6984bcf8c3692d853a9922e2cf1de19b91201cb9e396d9264c32cebedc46 *julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz" | sha256sum -c - && \
-    tar xzf julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION_1} --strip-components=1 && \
-    rm /tmp/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz
+ENV     JULIA_VERSION_1=1.0.2
 
-RUN ln -fs /opt/julia-${JULIA_VERSION_1}/bin/julia /usr/local/bin/julia-${JULIA_VERSION_1}
+RUN     mkdir /opt/julia-${JULIA_VERSION_1} && \
+        cd /tmp && \
+        wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION_1} | cut -d. -f 1,2`/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz && \
+        echo "e0e93949753cc4ac46d5f27d7ae213488b3fef5f8e766794df0058e1b3d2f142 *julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz" | sha256sum -c - && \
+        tar xzf julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION_1} --strip-components=1 && \
+        rm /tmp/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz
 
-    # Show Julia where conda libraries are \
-# RUN mkdir /etc/julia && \
-RUN    echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/juliarc.jl && \
-    # Create JULIA_PKGDIR \
-    # mkdir $JULIA_PKGDIR && \
-    chown $NB_USER $JULIA_PKGDIR && \
-    fix-permissions $JULIA_PKGDIR
+RUN     ln -fs /opt/julia-${JULIA_VERSION_1}/bin/julia /usr/local/bin/julia-${JULIA_VERSION_1}
 
-USER $NB_UID
+       # Show Julia where conda libraries are \
+RUN     [ -d /etc/julia ] || mkdir /etc/julia && \
+
+RUN     echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/juliarc.jl && \
+       # Create JULIA_PKGDIR \
+        [ -d $JULIA_PKGDIR ] || mkdir $JULIA_PKGDIR && \
+        chown $NB_USER $JULIA_PKGDIR && \
+        fix-permissions $JULIA_PKGDIR
+
+USER    $NB_UID
+
+
+
 
 # Add Julia packages. Only add HDF5 if this is not a test-only build since
 # it takes roughly half the entire build time of all of the images on Travis
@@ -42,21 +50,24 @@ USER $NB_UID
 # Install IJulia as jovyan and then move the kernelspec out
 # to the system share location. Avoids problems with runtime UID change not
 # taking effect properly on the .local folder in the jovyan home dir.
-RUN julia-${JULIA_VERSION_1} -e 'Pkg.init(); Pkg.update()' && \
-    julia-${JULIA_VERSION_1} -e 'Pkg.clone("https://github.com/vimalaad/CoolProp.jl.git"); Pkg.build("CoolProp")'
+RUN       julia-${JULIA_VERSION_1} -e 'Pkg.add("Feather"); Pkg.add("DataFrames")' && \
+          julia-${JULIA_VERSION_1} -e 'Pkg.add("NamedArrays"); Pkg.add("RDatasets")' && \
+          julia-${JULIA_VERSION_1} -e 'Pkg.add("Unitful"); Pkg.update()'
+
     # (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
     # julia -e 'import Pkg; Pkg.add("Gadfly")' && \
     # julia -e 'import Pkg; Pkg.add("RDatasets")' && \
     # julia -e 'import Pkg; Pkg.add("IJulia")' && \
 
-     # Precompile Julia packages \
-RUN    julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")'
+         # Precompile Julia packages \
+RUN       julia-${JULIA_VERSION_1} -e 'Pkg.add("IJulia"); using IJulia'
+# RUN       julia-${JULIA_VERSION_1} -e 'using IJulia; IJulia.installkernel("Julia quiet", "--depwarn=no")'
 
-     # move kernelspec out of home \
-RUN mv $HOME/.local/share/jupyter/kernels/julia-[a-z]* $CONDA_DIR/share/jupyter/kernels/ && \
-    chmod -R go+rx $CONDA_DIR/share/jupyter && \
-    rm -rf $HOME/.local && \
-    fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
+         # move kernelspec out of home \
+RUN       mv $HOME/.local/share/jupyter/kernels/julia* $CONDA_DIR/share/jupyter/kernels/ && \
+          chmod -R go+rx $CONDA_DIR/share/jupyter && \
+          rm -rf $HOME/.local && \
+          fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
 
 
 RUN     cd ~/work
