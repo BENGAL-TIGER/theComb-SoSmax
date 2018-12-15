@@ -22,7 +22,7 @@ ENV     JULIA_VERSION_1=1.0.2
 
 RUN     mkdir -p /opt/julia-${JULIA_VERSION_1} && \
         cd /tmp && \
-        wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION_1} | cut -d. -f 1,2`/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz && \
+        curl -O https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION_1} | cut -d. -f 1,2`/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz && \
         echo "e0e93949753cc4ac46d5f27d7ae213488b3fef5f8e766794df0058e1b3d2f142 *julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz" | sha256sum -c - && \
         tar xzf julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION_1} --strip-components=1 && \
         rm /tmp/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz
@@ -50,7 +50,7 @@ USER    $NB_UID
 # Install IJulia as jovyan and then move the kernelspec out
 # to the system share location. Avoids problems with runtime UID change not
 # taking effect properly on the .local folder in the jovyan home dir.
-RUN       julia-${JULIA_VERSION_1} -e 'Pkg.add("Feather"); Pkg.add("DataFrames")' && \
+RUN       julia-${JULIA_VERSION_1} -e 'using Pkg; Pkg.add("Feather"); Pkg.add("DataFrames")' && \
           julia-${JULIA_VERSION_1} -e 'Pkg.add("NamedArrays"); Pkg.add("RDatasets")' && \
           julia-${JULIA_VERSION_1} -e 'Pkg.add("Unitful"); Pkg.update()'
 
