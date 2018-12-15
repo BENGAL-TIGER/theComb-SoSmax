@@ -20,7 +20,7 @@ RUN     /opt/julia-0.6.2/bin/julia -e 'Pkg.init(); Pkg.clone("https://github.com
 
 ENV     JULIA_VERSION_1=1.0.2
 
-RUN     mkdir /opt/julia-${JULIA_VERSION_1} && \
+RUN     mkdir -p /opt/julia-${JULIA_VERSION_1} && \
         cd /tmp && \
         wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION_1} | cut -d. -f 1,2`/julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz && \
         echo "e0e93949753cc4ac46d5f27d7ae213488b3fef5f8e766794df0058e1b3d2f142 *julia-${JULIA_VERSION_1}-linux-x86_64.tar.gz" | sha256sum -c - && \
@@ -30,11 +30,11 @@ RUN     mkdir /opt/julia-${JULIA_VERSION_1} && \
 RUN     ln -fs /opt/julia-${JULIA_VERSION_1}/bin/julia /usr/local/bin/julia-${JULIA_VERSION_1}
 
        # Show Julia where conda libraries are \
-RUN     [ -d /etc/julia ] || mkdir /etc/julia && \
+RUN     mkdir -p /etc/julia
 
 RUN     echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /etc/julia/juliarc.jl && \
        # Create JULIA_PKGDIR \
-        [ -d $JULIA_PKGDIR ] || mkdir $JULIA_PKGDIR && \
+        mkdir -p $JULIA_PKGDIR && \
         chown $NB_USER $JULIA_PKGDIR && \
         fix-permissions $JULIA_PKGDIR
 
