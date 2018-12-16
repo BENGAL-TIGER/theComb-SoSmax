@@ -49,7 +49,7 @@ USER    $NB_UID
 # taking effect properly on the .local folder in the jovyan home dir.
 
 RUN     julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
-       # julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("HDF5")'  && \
+        julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("HDF5")'  && \
         julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("Feather")'  && \
         julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("DataFrames")'  && \
         julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.add("NamedArrays")'  && \
@@ -66,6 +66,12 @@ RUN     julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
 # USER    root
 #
 # RUN     rm -rf $HOME/.local
+
+RUN     npm install -g typescript && \
+        npm install -g itypescript && \
+        its --ts-install=local && \
+        echo RUBY 
+
 
 USER    $NB_UID
 
