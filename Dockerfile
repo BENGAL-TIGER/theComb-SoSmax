@@ -70,10 +70,12 @@ RUN     julia-${JULIA_VERSION_1} -e 'import Pkg; Pkg.update()'  && \
 RUN     npm install -g typescript && \
         npm install -g itypescript && \
         its --ts-install=local && \
-        echo RUBY 
+        echo RUBY
 
 
-USER    $NB_UID
+# USER    $NB_UID
+
+USER    root
 
 RUN     fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
 
